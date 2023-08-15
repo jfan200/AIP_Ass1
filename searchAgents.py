@@ -799,25 +799,41 @@ class BidirectionalFoodSearchProblem:
 
         """You code here for Task 3:"""
         # Define your initial state
-        self.start = ()
+        self.food = self.getFoodStates()
+        self.start = (self.init_pos, self.food)
+
+        #print(self.getFoodStates())
+
+
+
         # And if you have anything else want to initialize:
         
-        
+    def getFoodStates(self):
+        food = []
+        for x in range(self.foodGrid.width):
+            for y in range(self.foodGrid.height):
+                if self.foodGrid[x][y]:
+                    food.append((x, y))
+        return food
+
     def getStartState(self):
         """You code here for Task 3:"""
         # You MUST implement this function to return the initial state
         return self.start
     
     def getGoalStates(self):
-        goal_states = []
         """You code here for Task 3:"""
         # You must generate all goal states
-        
+        goal_states = self.getFoodStates()
+
         return goal_states
 
     def isGoalState(self, state):
         goal_achieved = False
         """You code here for Task 3:"""
+
+        if len(state[1]) == 0:
+            goal_achieved = True
         # You MUST implement this function to return True or False
         # to indicate whether the give state is one of the goal state or not        
         
@@ -828,16 +844,24 @@ class BidirectionalFoodSearchProblem:
         # A successor is in the format of (next_state, action, cost)
         successors = []
         self._expanded += 1 # DO NOT CHANGE
-        
+
         """You code here for Task 3:"""
+        #print(f'state: {state}')
+        for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+            x, y = state[0]
+            dx, dy = Actions.directionToVector(direction)
+            next_x, next_y = int(x + dx), int(y + dy)
+            #dx and dy are float
+            if not self.walls[next_x][next_y]:
+                next_state = (next_x, next_y)
+                action = state[1]
+                successors.append(((next_state, action), direction, 1))
+            print(successors)
+        return successors
 
         # There are four actions might be available:
         # for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
         #     dx, dy = Actions.directionToVector(direction)
-            
-            
-            
-        return successors
 
     def getBackwardsSuccessors(self, state):
         # You MUST implement this function to return a list of backwards successors
@@ -847,6 +871,19 @@ class BidirectionalFoodSearchProblem:
         self._expanded += 1 # DO NOT CHANGE
         
         """You code here for Task 3:"""
+        print(f'State: {state}')
+        print(f'{state[0]}')
+        x, y = state[0]
+        for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+
+            dx, dy = Actions.directionToVector(direction)
+            next_x, next_y = int(x - dx), int(y - dy)  # Reverse the direction here
+            if not self.walls[next_x][next_y]:
+                next_state = (next_x, next_y)
+                action = state[1]  # Use the opposite direction as the action
+                rev_direction = Actions.reverseDirection(direction)
+                successors.append(((next_state, action), rev_direction, 1))
+        return successors
 
         # There are four actions might be available:
         # for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:

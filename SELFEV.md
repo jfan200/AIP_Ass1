@@ -54,7 +54,9 @@ This graph is just an example of how you can include your plots in markdown. **P
 > Please explain the code performance of your solution. You can create a video, include figures, tables, etc. Make sure to complement them with text explaining the performance.
 
 #### Learning and Challenges
-> Please include your top lessons learnt, and challenges faced.  
+> Understanding algorithms takes a lot of time. First, we must understand how the algorithm works. Then, we must implement it in python code. Even though we already have the sudo code for this algorithm, we still need to implement additional conditions and ideas to make the code satisfy the logic of the algorithm.
+>
+> 
 
 #### Ideas That Almost Worked Well
 
