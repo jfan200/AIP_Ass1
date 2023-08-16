@@ -31,7 +31,7 @@ This graph is just an example of how you can include your plots in markdown. **P
 > Please explain the code performance of your solution. You can create a video, include figures, tables, etc. Make sure to complement them with text explaining the performance.
 
 #### Learning and Challenges
-> Please include your top lessons learnt, and challenges faced.  
+> Before doing this part, I have practiced on the question of UC berkely project. During this process, I have fimillared with search.py, searchAgent.py, pacman.py and pacmanAgent.py.
 
 #### Ideas That Almost Worked Well
 
@@ -54,7 +54,7 @@ This graph is just an example of how you can include your plots in markdown. **P
 > Please explain the code performance of your solution. You can create a video, include figures, tables, etc. Make sure to complement them with text explaining the performance.
 
 #### Learning and Challenges
-> Please include your top lessons learnt, and challenges faced.  
+> Before doing this section, I have practiced on the problems of the UC Berkeley project. In the process, I familiarized myself with search.py, searchAgent.py, pacman.py, and pacmanAgent.py. They are the foundation of this project, and the questions in these three parts focus on modifying these four python files. In this part, I learned to use python to implement pseudo-code for enforced hill climbing. In this problem it is divided into two parts. One is the "Improve" method and the other is the "Enforced Hill Climbing" method.
 
 #### Ideas That Almost Worked Well
 

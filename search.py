@@ -65,7 +65,6 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -92,12 +91,30 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
+    result = []
+    s = problem.getStartState()
+    stack = util.Stack()
+    visited = []
+    while not problem.isGoalState(s):
+        if s not in visited:
+            visited.append(s)
+            successors = problem.getSuccessors(s)
+            for successor in successors:
+                state, action, cost = successor
+                if state not in visited:
+                    stack.push((state, result.append(action)))
+        if state.isEmpty():
+            result = []
+            break
+        state, result = stack.pop()
+    return result
+
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
@@ -118,7 +135,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     myPQ = util.PriorityQueue()
     startState = problem.getStartState()
-    startNode = (startState, '',0, [])
+    startNode = (startState, '', 0, [])
     myPQ.push(startNode,heuristic(startState,problem))
     visited = set()
     best_g = dict()
@@ -148,15 +165,44 @@ def enforcedHillClimbing(problem, heuristic=nullHeuristic):
     It will be pass to this function as second argument (heuristic).
     """
     "*** YOUR CODE HERE FOR TASK 1 ***"
-    
-    
+    def improve(node):
+        open = util.Queue()
+        open.push(node)
+        initial_state = node[0]
+        h0 = heuristic(initial_state, problem)
+        closed = set()
+
+        while not open.isEmpty():
+            n = open.pop()
+            state, action = n
+            if state not in closed:
+                #print(f"Current node: {n}")
+                closed.add(state)
+                #print(f"h0: {h0}\ncurrent: {heuristic(state, problem)}\n")
+                if heuristic(state, problem) < h0:
+                    return n
+                for succ in problem.getSuccessors(state):
+                    succState, succAction, succCost = succ
+                    open.push((succState, action + [succAction]))
+        return None
+
+    state = problem.getStartState()
+    solution = []
+    node = (state, solution)
+    while not problem.isGoalState(state):
+        node = improve(node)
+        state, solution = node
+        # print(f"Improved node: {node}")
+        # print(f"state: {state}")
+    return solution
     # put the below line at the end of your code or remove it
     util.raiseNotDefined()
-        
 
-from math import inf as INF   
+
+
+from math import inf as INF
 def bidirectionalAStarEnhanced(problem, heuristic=nullHeuristic, backwardsHeuristic=nullHeuristic):
-    
+
     """
     Bidirectional global search with heuristic function.
     You DO NOT need to implement any heuristic, but you DO have to call them.
@@ -165,11 +211,90 @@ def bidirectionalAStarEnhanced(problem, heuristic=nullHeuristic, backwardsHeuris
     You can call it by using: heuristic(state,problem) or backwardsHeuristic(state,problem)
     """
     "*** YOUR CODE HERE FOR TASK 2 ***"
-    # The problem passed in going to be BidirectionalPositionSearchProblem    
-    
-    
+    # The problem passed in going to be BidirectionalPositionSearchProblem
+    #open_f
+    close_f = set()
+    open_f = util.PriorityQueue()
+    start_state_f = problem.getStartState()
+    start_node_f = (start_state_f, '', 0, [])
+    open_f.push(start_node_f, heuristic(start_state_f, problem))
+    best_gf = {}
+
+    #Open_b
+    close_b = set()
+    open_b = util.PriorityQueue()
+    goal_states = problem.getGoalStates()  #only one goal state in this situation
+    for goal in goal_states:
+        start_node_b = (goal, '', 0, [])
+        open_b.push(start_node_b, backwardsHeuristic(goal, problem))
+    best_gb = {}
+
+    L = 0
+    U = INF
+    is_forward = True
+    solution = []
+
+    while not open_f.isEmpty() and not open_b.isEmpty():
+        bMin_f = open_f.getMinimumPriority()
+        bMin_b = open_b.getMinimumPriority()
+        L = (bMin_f + bMin_b) / 2
+
+        # Determine which direction
+        if is_forward:
+            n = open_f.pop()
+            state, action, cost, path = n
+
+            if str(state) not in close_f:
+                close_f.add(str(state))
+                best_gf[str(state)] = (cost, path)
+
+            if str(state) in close_b and best_gf[str(state)][0] + best_gb[str(state)][0] < U:
+                U = best_gf[str(state)][0] + best_gb[str(state)][0]
+                solution = best_gf[str(state)][1] + list(reversed(best_gb[str(state)][1]))
+
+            if L >= U:
+                return solution
+
+            for succ in problem.getSuccessors(state):
+                succState, succAction, succCost = succ
+                if str(succState) not in close_f:
+                    newNode = (succState, succAction, cost + succCost, path + [succAction])
+                    dx = heuristic(succState, problem) + cost + succCost \
+                         + best_gf[str(state)][0] - backwardsHeuristic(state, problem)
+                    open_f.push(newNode, dx)
+        else:
+            n = open_b.pop()
+            state, action, cost, path = n
+
+            if str(state) not in close_b:
+                close_b.add(str(state))
+                best_gb[str(state)] = (cost, path)
+
+            if str(state) in close_f and (best_gf[str(state)][0] + best_gb[str(state)][0]) < U:
+                U = best_gf[str(state)][0] + best_gb[str(state)][0]
+                solution = best_gf[str(state)][1] + list(reversed(best_gb[str(state)][1]))
+
+            if L >= U:
+                return solution
+
+            for succ in problem.getBackwardsSuccessors(state):
+                succState, succAction, succCost = succ
+                if str(succState) not in close_b:
+                    newNode = (succState, succAction, cost + succCost, path + [succAction])
+                    dx = backwardsHeuristic(succState, problem) + cost + succCost \
+                         + best_gb[str(state)][0] - heuristic(state, problem)
+                    open_b.push(newNode, dx)
+
+        if open_f.getMinimumPriority() < open_b.getMinimumPriority():
+            is_forward = True
+        else:
+            is_forward = False
+    return solution
+
+
     # put the below line at the end of your code or remove it
     util.raiseNotDefined()
+
 
 
 # Abbreviations
