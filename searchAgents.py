@@ -848,14 +848,13 @@ class BidirectionalFoodSearchProblem:
         """You code here for Task 3:"""
         #print(f'state: {state}')
         for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            x, y = state[0]
+            x, y = state
             dx, dy = Actions.directionToVector(direction)
             next_x, next_y = int(x + dx), int(y + dy)
             #dx and dy are float
             if not self.walls[next_x][next_y]:
                 next_state = (next_x, next_y)
-                action = state[1]
-                successors.append(((next_state, action), direction, 1))
+                successors.append((next_state, direction, 1))
             print(successors)
         return successors
 
@@ -871,27 +870,22 @@ class BidirectionalFoodSearchProblem:
         self._expanded += 1 # DO NOT CHANGE
         
         """You code here for Task 3:"""
-        print(f'State: {state}')
-        print(f'{state[0]}')
-        x, y = state[0]
+        # print(f'State: {state}')
+        # print(f'{state[0]}')
         for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-
+            x, y = state
             dx, dy = Actions.directionToVector(direction)
-            next_x, next_y = int(x - dx), int(y - dy)  # Reverse the direction here
+            next_x, next_y = int(x + dx), int(y + dy)  # Reverse the direction here
             if not self.walls[next_x][next_y]:
                 next_state = (next_x, next_y)
-                action = state[1]  # Use the opposite direction as the action
                 rev_direction = Actions.reverseDirection(direction)
-                successors.append(((next_state, action), rev_direction, 1))
+                successors.append((next_state, rev_direction, 1))
         return successors
 
         # There are four actions might be available:
         # for direction in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
         #     dx, dy = Actions.directionToVector(direction)
-            
-            
-            
-        return successors
+
 
 
     
@@ -911,8 +905,26 @@ class BidirectionalFoodSearchProblem:
 
 def bidirectionalFoodProblemHeuristic(state, problem):
     "*** YOUR CODE HERE for Task 3 ***"
-    return 0
+    n, actions = state
+    max_distance = 0
+
+    for action in actions:
+        distance = util.manhattanDistance(n, action)
+        max_distance = max(max_distance, distance)
+    return max_distance
+
 
 def bidirectionalFoodProblemBackwardsHeuristic(state, problem):
     "*** YOUR CODE HERE for Task 3 ***"
-    return 0
+    #print(f"n: {state}")
+    n, actions = state
+    max_distance = 0
+    start_state = problem.getStartState()
+
+    for action in start_state[1]:
+        #print(f'n: {n}\naction: {action}\n')
+        distance = util.manhattanDistance(n, action)
+        max_distance = max(max_distance, distance)
+    return max_distance
+
+
